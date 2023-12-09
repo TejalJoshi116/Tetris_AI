@@ -39,6 +39,7 @@ class PcPlayer:
                 copyBoard.dropPieceWithoutLock(copyTet)
                 copyBoard.moveLeftAndLockPiece(copyTet, 2)
                 score = self.getPositionScore(board, copyTet)
+                # print("linecleared:",self.getLinesClearedScore(copyBoard))
                 self.positionScores[rotationCount][xPos] = copy.copy(score)
                 copyBoard = copy.deepcopy(board)
                 copyTet = copy.deepcopy(tetromino)
@@ -80,20 +81,53 @@ class PcPlayer:
     def getPositionScore(self, board, tetromino):
         (holeScore, columnScore) = self.getHoleAndColumnScore(board, tetromino)
         heightScore = self.getHeightScore(board, tetromino)
+
+        tempBoard = copy.deepcopy(board)
+        tempBoard.lockPieceOnGrid(tetromino)
+        #+++++Hereeeeee++++++++
+        clearedRowCount = tempBoard.clearFullRows()
+        linesClearedScore = clearedRowCount
+        print("filled rows=",linesClearedScore)
+
+        #positionScore = holeScore + heightScore + columnScore + linesClearedScore
         positionScore = holeScore + heightScore + columnScore
+        print("pos_score: ",positionScore," | Line score: ",linesClearedScore," | HoleScore: ",holeScore," | height_score: ",heightScore,"\n")
         return positionScore
+    #+++++Hereeeeee++++++++
+    def getLinesClearedScore(self, board):
+        linesClearedCount = 0
+        grid = copy.deepcopy(board.grid)
+        for y in range(board.height-1, 0, -1):
+            if all(grid[y][x] == 1 for x in range(board.width)):
+                linesClearedCount += 1
+            
+        #board.linesClearedThisMove = linesClearedCount
+
+        #Ithe adjust kar
+        linesClearedScore = linesClearedCount * 10
+        return linesClearedScore
 
     def getHeightScore(self, board, tetromino):
         positionHeight = board.height - tetromino.getMinYCoord()
         heightScore = (positionHeight / board.height) * self.heightWeight
         return heightScore
-
+    
+    # def makeGrid(self, board, tetromino):
+    #     grid = copy.deepcopy(board.grid)
+    #     for coord in tetromino.blockCoords:
+    #         y = int(coord[1])
+    #         x = int(coord[0])
+    #         grid[y][x] = 1
+    #     return grid    
+        
+    
     def getHoleAndColumnScore(self, board, tetromino):
         grid = copy.deepcopy(board.grid)
         for coord in tetromino.blockCoords:
             y = int(coord[1])
             x = int(coord[0])
             grid[y][x] = 1
+        # grid = self.makeGrid(board, tetromino)
         (newHoleCount, newColumnCount) = self.getHoleAndColumnCount(grid)
         holeScore = ((newHoleCount - board.holeCount)) * self.holeWeight
         columnScore = ((newColumnCount - board.columnCount)) * self.columnWeight
@@ -104,9 +138,11 @@ class PcPlayer:
         gridWidth = len(grid[0])
         holeCount = 0
         columnCount = 0
+        filledRowCount = 0
         columnList = [None] * gridWidth
         for x in range(gridWidth):
             emptyCount = 0
+
             for y in range(gridHeight-1, 0, -1):
                 if (grid[y][x] == 0):
                     emptyCount += 1
@@ -120,7 +156,17 @@ class PcPlayer:
             columnCount += 1
         for i in range(1, gridWidth-2, 1):
             if ((columnList[i] >= (columnList[i-1] + self.columnHeightLimit)) and (columnList[i] >= (columnList[i+1] + self.columnHeightLimit))):
-                columnCount += 1          
+                columnCount += 1     
+        print(grid)
+
+        filled_rows = 0
+        #+++++Hereeeeee++++++++
+        # for row_key, row_values in grid.items():
+        #     if all(val != 0 for val in row_values):
+        #         filled_rows += 1
+
+        # print("FIlled_rows:",filled_rows)
+
         return (holeCount, columnCount)
 
     def makeMove(self, board, tetromino, position, draw):

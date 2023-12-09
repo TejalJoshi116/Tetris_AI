@@ -23,6 +23,7 @@ class Board:
         self.startInterval = 1000
         self.score = 0
         self.linesCleared = 0
+        self.linesClearedThisMove=0
         self.level = 1
         self.levelScore = 0 
         self.emptyGrid()
