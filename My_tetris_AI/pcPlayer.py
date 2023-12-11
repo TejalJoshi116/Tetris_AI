@@ -46,24 +46,28 @@ class PcPlayer:
         
     def choosePieceAndPosition(self, board, tetromino):
         swapPiece = False
-        #Score the active tetromino piece
+        
         self.scoreAllPositions(board, tetromino)
         tetMin = self.getMinScoreAndPosition()
         self.clearPositionScores(board)
-        #Move a copy of the heldpiece into position and score
-        heldPiece = copy.deepcopy(board.heldPiece)
-        board.centrePiece(heldPiece)
-        heldPiece.incrementCoords(tetromino.xOffset, tetromino.yOffset)
-        self.scoreAllPositions(board, heldPiece)
-        heldPieceMin = self.getMinScoreAndPosition()
-        self.clearPositionScores(board)
-        #Compare
-        if (heldPieceMin[0] < tetMin[0]):
-            position = (heldPieceMin[1], heldPieceMin[2])
-            swapPiece = True
-        else:
-            position = (tetMin[1], tetMin[2])
-        return (swapPiece, position)
+        
+        # heldPiece = copy.deepcopy(board.heldPiece)
+        # board.centrePiece(heldPiece)
+        # heldPiece.incrementCoords(tetromino.xOffset, tetromino.yOffset)
+        # self.scoreAllPositions(board, heldPiece)
+        # heldPieceMin = self.getMinScoreAndPosition()
+        # self.clearPositionScores(board)
+        # #Compare
+        # if (heldPieceMin[0] < tetMin[0]):
+        #     position = (heldPieceMin[1], heldPieceMin[2])
+        #     swapPiece = True
+        # else:
+        #     position = (tetMin[1], tetMin[2])
+        # return (swapPiece, position)
+
+        position = (tetMin[1], tetMin[2])
+        print("++++++++++++++++++++++++++++++++ CHOSEN ++++++++++++++++++++++++++++++++++++++++++++")
+        return (False, position)
 
     def getMinScoreAndPosition(self): 
         minScore = self.positionScores[0][0]
@@ -87,11 +91,11 @@ class PcPlayer:
         #+++++Hereeeeee++++++++
         clearedRowCount = tempBoard.clearFullRows()
         linesClearedScore = clearedRowCount
-        print("filled rows=",linesClearedScore)
+        #print("filled rows=",linesClearedScore)
 
         #positionScore = holeScore + heightScore + columnScore + linesClearedScore
         positionScore = holeScore + heightScore + columnScore
-        print("pos_score: ",positionScore," | Line score: ",linesClearedScore," | HoleScore: ",holeScore," | height_score: ",heightScore,"\n")
+        print("pos_score: ",positionScore," | HoleScore: ",holeScore," | height_score: ",heightScore,"\n")
         return positionScore
     #+++++Hereeeeee++++++++
     def getLinesClearedScore(self, board):
@@ -109,6 +113,8 @@ class PcPlayer:
 
     def getHeightScore(self, board, tetromino):
         positionHeight = board.height - tetromino.getMinYCoord()
+        #Take the ratio of the min height point of the peice placed and the total height.
+        #~~~~~~~~~~~~~~~~~Try taking max y~~~~~~~~~~~
         heightScore = (positionHeight / board.height) * self.heightWeight
         return heightScore
     
@@ -157,9 +163,26 @@ class PcPlayer:
         for i in range(1, gridWidth-2, 1):
             if ((columnList[i] >= (columnList[i-1] + self.columnHeightLimit)) and (columnList[i] >= (columnList[i+1] + self.columnHeightLimit))):
                 columnCount += 1     
-        print(grid)
-
-        filled_rows = 0
+        #print(grid)
+        
+        holedrow=0
+        filledrow=0
+        
+        for y in range(gridHeight-1, 0, -1):
+            x=0
+            is_fill=0
+            while x <(gridWidth):               
+                if (grid[y][x] == 0):    
+                    holedrow+=1                                                       
+                    break
+                else:
+                    is_fill+=1
+            if(is_fill==10):
+                filledrow+=1
+                   
+            
+        print("Filled_rows:",filledrow) 
+        
         #+++++Hereeeeee++++++++
         # for row_key, row_values in grid.items():
         #     if all(val != 0 for val in row_values):
