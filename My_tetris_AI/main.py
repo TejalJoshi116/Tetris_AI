@@ -81,7 +81,7 @@ while isOpen:
             draw.refreshScreen(board, tetromino)
             locked = board.moveOrLockPiece(tetromino, Direction.DOWN)
             draw.refreshScreen(board, tetromino)
-            pygame.time.delay(2000)
+            pygame.time.delay(100)
             if (locked):
                 tetromino = board.newPieceOrGameOver(tetromino)
                 if tetromino == None:
