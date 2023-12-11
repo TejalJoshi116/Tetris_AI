@@ -167,18 +167,25 @@ class PcPlayer:
         
         holedrow=0
         filledrow=0
+        for y in range(gridHeight - 1, 0, -1):
+            has_hole = any(grid[y][x] == 0 for x in range(gridWidth))
+            if not has_hole:
+                filledrow += 1
+
+        print("Filled_rows:", filledrow)
         
-        for y in range(gridHeight-1, 0, -1):
-            x=0
-            is_fill=0
-            while x <(gridWidth):               
-                if (grid[y][x] == 0):    
-                    holedrow+=1                                                       
-                    break
-                else:
-                    is_fill+=1
-            if(is_fill==10):
-                filledrow+=1
+        # for y in range(gridHeight-1, 0, -1):
+        #     x=0
+        #     is_fill=0
+        #     while x <(gridWidth):               
+        #         if (grid[y][x] == 0):    
+        #             holedrow+=1                                                       
+        #             break
+        #         else:
+        #             is_fill+=1
+
+        #     if(is_fill == 10):
+        #         filledrow+=1
                    
             
         print("Filled_rows:",filledrow) 
