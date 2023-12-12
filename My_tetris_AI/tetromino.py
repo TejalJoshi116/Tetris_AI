@@ -98,3 +98,10 @@ class Tetromino():
                     coord[0] = self.centre[0] - (direction * y)
                     #This line is needed to adjust so the block coord is always top left coord of "block"
                     coord[int((1 - direction)/2)] += -1
+
+    def printPiece(tetromino):
+        print(f"Shape: {tetromino.shape}")
+        print(f"Rotation: {tetromino.rotations}")
+        print("Coordinates:")
+        for coord in tetromino.blockCoords:
+            print(f"({coord[0]}, {coord[1]})")

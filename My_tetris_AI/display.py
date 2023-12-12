@@ -184,6 +184,8 @@ class Draw:
         self.screen.fill("White")
         self.drawBackground(board)
         self.drawGridPieces(board)
+        
+        
         self.drawTetromino(tetromino)
         self.drawHeldPieceText()
         self.drawScores(board)

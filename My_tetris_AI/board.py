@@ -52,6 +52,7 @@ class Board:
             coord[0] += (self.width/2) - 2 
         
     def generatePiece(self):
+        
         if (len(self.pieceList) == 0):
             self.pieceList = list(Tetromino._allShapes.keys())
             random.shuffle(self.pieceList)
