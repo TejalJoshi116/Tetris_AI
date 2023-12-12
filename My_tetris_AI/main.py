@@ -5,6 +5,9 @@ from board import *
 from pcPlayer import *
 from direction import *
 from rotation import *
+
+
+
 print("\n\n++++ Welcome to Tejal's Tetris++++\n")
 
 #Bools that control game state
@@ -70,98 +73,57 @@ while isOpen:
     got_a_tetris = False
     #gamePlay Loop
     while (not any(gameFlags)):
-        
+
         #Draw game elements to screen
-        draw.refreshScreen(board, tetromino)
-    
-        #pcPlayer code
+        draw.refreshScreen(board, tetromino)   
+
+#++++++++++++++++ pcPlayer code++++++++++++++++++++++
+
         if (selfPlay):
             if (board.isHeldPieceEmpty()):
-                board.setHeldPiece(tetromino)
-            
+                board.setHeldPiece(tetromino)            
             if got_a_tetris==False :              
-                tetromino = board.generatePiece()
-
-            # print("post start generate piece")
-            # pygame.time.delay(2000)  
-            draw.refreshScreen(board, tetromino)
-            
+                tetromino = board.generatePiece()            
+            draw.refreshScreen(board, tetromino)            
             locked = board.moveOrLockPiece(tetromino, Direction.DOWN)
             draw.refreshScreen(board, tetromino)
-            pygame.time.delay(300)
             if (locked):
                 tetromino = board.newPieceOrGameOver(tetromino)
-                # print("post start newpieceorgameover")
-                # pygame.time.delay(2000)  
+                
                 if tetromino == None:
                     gameOver = True
                     break
-            # print("0")
-            # Tetromino.printPiece(tetromino)  
-            # print("next is choose piece")
-            # pygame.time.delay(500)
-                          
+                                      
             (swapPiece, position) = pcPlayer.choosePieceAndPosition(board, tetromino)
             if (swapPiece):
-                tetromino = board.swapWithHeldPiece(tetromino)
-            # print("next is refresh1")
-            # pygame.time.delay(1000)    
-            draw.refreshScreen(board, tetromino)
-            # print("next is Make move")
-            # pygame.time.delay(1000)
-                        
+                tetromino = board.swapWithHeldPiece(tetromino)               
+            draw.refreshScreen(board, tetromino)                       
             pcPlayer.makeMove(board, tetromino, position, draw)
-            # print("next is newpiece or gameover")
-            pygame.time.delay(300)
             tetromino = board.newPieceOrGameOver(tetromino)
-            got_a_tetris=True
-            # print("post newpiece gamover\n")
-            # for y in range(board.height):
-            #     for x in range(board.width):
-            #         print(board.grid[y][x], end=' ')
-            #     print()  # Move to the next line for the next row
-            # print()
-            # print("1")
-            # Tetromino.printPiece(tetromino)
-            # print("next is refresh2")
-
-            # pygame.time.delay(2000)
-            draw.refreshScreen(board, tetromino)
-            # print("post refresh2 screen\n")
-            
-            # pygame.time.delay(2000)
-            # print("2")
-            # Tetromino.printPiece(tetromino)
-            
+            got_a_tetris=True    
+            draw.refreshScreen(board, tetromino)            
             if tetromino == None:
                 gameOver = True
                 break
-
-        #Step game forward
+        
         timeCount += clock.get_rawtime()
         clock.tick()
         if (timeCount >= board.getDropInterval()):
             timeCount = 0
-            # print("next is time: move or lock")
-            # pygame.time.delay(2000)
+            
             locked = board.moveOrLockPiece(tetromino, Direction.DOWN)
             temp=True
             if (locked):
-                # print("next is time: new piece or gameoverr")
-                # pygame.time.delay(2000)
+               
                 #++++++++++May mess up+++++++ temp
                 # temp_tetromino = board.newPieceOrGameOver(tetromino)
                 if (tetromino.xOffset == 0) and (tetromino.yOffset == 0):
                     temp=False
                 if temp == False:
                     gameOver = True
-                    break
-            # print("next is time: refreshscreen")
-            # pygame.time.delay(2000)    
+                    break              
             draw.refreshScreen(board, tetromino)
-            # print(" time: post refreshscreen")
-            # pygame.time.delay(2000)
-
+            
         #Check for user input
         for event in pygame.event.get():
             if event.type == pygame.QUIT: 
@@ -172,6 +134,7 @@ while isOpen:
             if keyInput[pygame.K_n]:
                 newGame = True
             #Game controls only if not bot
+#++++++++++++++++    HUMAN MODE  ++++++++++++++++++++++            
             if (not selfPlay):
                 if keyInput[pygame.K_LCTRL] or keyInput[pygame.K_RCTRL]:
                     board.rotatePiece(tetromino, Rotation.ANTICLOCKWISE)

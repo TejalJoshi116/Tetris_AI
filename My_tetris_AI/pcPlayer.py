@@ -4,6 +4,14 @@ from board import *
 from direction import *
 
 class PcPlayer:
+    
+    def LockPiece(self,copyBoard,copyTet,rotationCount,xPos,board):
+        copyBoard.rotatePiece(copyTet, Rotation.CLOCKWISE, rotationCount)
+        self.moveFarLeft(board, copyTet)
+        copyBoard.moveOrLockPiece(copyTet, Direction.RIGHT, xPos)
+        copyBoard.dropPieceWithoutLock(copyTet)
+        copyBoard.moveLeftAndLockPiece(copyTet, 2)
+        
 
     def clearPositionScores(self, board):
         self.positionScores = {}
@@ -35,13 +43,8 @@ class PcPlayer:
         copyBoard = copy.deepcopy(board)
         for rotationCount in range(0, 4):
             for xPos in range(board.width):
-                copyBoard.rotatePiece(copyTet, Rotation.CLOCKWISE, rotationCount)
-                self.moveFarLeft(board, copyTet)
-                copyBoard.moveOrLockPiece(copyTet, Direction.RIGHT, xPos)
-                copyBoard.dropPieceWithoutLock(copyTet)
-                copyBoard.moveLeftAndLockPiece(copyTet, 2)
+                self.LockPiece(copyBoard,copyTet,rotationCount,xPos,board)              
                 score = self.getPositionScore(board, copyTet)
-                # print("linecleared:",self.getLinesClearedScore(copyBoard))
                 self.positionScores[rotationCount][xPos] = copy.copy(score)
                 copyBoard = copy.deepcopy(board)
                 copyTet = copy.deepcopy(tetromino)
@@ -59,19 +62,15 @@ class PcPlayer:
         self.scoreAllPositions(board, heldPiece)
         heldPieceMin = self.getMinScoreAndPosition()
         self.clearPositionScores(board)
-        # position = (tetMin[1], tetMin[2])
-        #Compare
+       
         if (heldPieceMin[0] < tetMin[0]):
             position = (heldPieceMin[1], heldPieceMin[2])
             swapPiece = True
         else:
             position = (tetMin[1], tetMin[2])
-        # print("++++++++++++++++++++++++++++++++ CHOSEN ++++++++++++++++++++++++++++++++++++++++++++")    
+        # print("++++++++++++++ CHOSEN ++++++++++++++++")    
         return (swapPiece, position)
 
-        # position = (tetMin[1], tetMin[2])
-        
-        # return (False, position)
 
     def getMinScoreAndPosition(self): 
         minScore = self.positionScores[0][0]
@@ -93,10 +92,7 @@ class PcPlayer:
 
         tempBoard = copy.deepcopy(board)
         tempBoard.lockPieceOnGrid(tetromino)
-        #+++++Hereeeeee++++++++
         
-
-        #positionScore = holeScore + heightScore + columnScore + linesClearedScore
         positionScore = holeScore + heightScore + columnScore + rowfillScore
         # print("pos_score: ",positionScore," | HoleScore: ",holeScore," | height_score: ",heightScore," |rowfill_score: ",rowfillScore)
         return positionScore
@@ -104,7 +100,6 @@ class PcPlayer:
     def getHeightScore(self, board, tetromino):
         positionHeight = board.height - tetromino.getMinYCoord()
         #Take the ratio of the min height point of the peice placed and the total height.
-        #~~~~~~~~~~~~~~~~~Try taking max y~~~~~~~~~~~
         heightScore = (positionHeight / board.height) * self.heightWeight
         return heightScore
     
@@ -119,7 +114,7 @@ class PcPlayer:
         (newHoleCount, newColumnCount, newRowCount) = self.getHoleAndColumnCount(grid)
         holeScore = ((newHoleCount - board.holeCount)) * self.holeWeight
         columnScore = ((newColumnCount - board.columnCount)) * self.columnWeight
-        #~~~~~~~~ITHEE
+        #~~~~~~~~ITHEE~~~~~~~~~~
         rowfillScore = newRowCount*self.rowfillweight
         return (holeScore, columnScore,rowfillScore)
 
@@ -156,7 +151,7 @@ class PcPlayer:
             if not has_hole:
                 filledRows += 1
 
-        # print("Filled_rows:", filledRows)
+       
         
        
     
@@ -167,7 +162,7 @@ class PcPlayer:
         rotationCount = position[0]
         xPos = position[1]
         board.rotatePiece(tetromino, Rotation.CLOCKWISE, rotationCount)        
-        pygame.time.delay(2000)
+        
         draw.refreshScreen(board, tetromino)
         self.moveFarLeft(board, tetromino)
         board.moveOrLockPiece(tetromino, Direction.RIGHT, xPos)
@@ -185,42 +180,3 @@ class PcPlayer:
 
 
 
-
-
-
-
-
-        # def makeMove(self, board, tetromino, position, draw):
-        #     print("Before rotation:")
-        # Tetromino.printPiece(tetromino)  # Print the current state of the tetromino before rotation
-
-        # rotationCount = position[0]
-        # xPos = position[1]
-        # board.rotatePiece(tetromino, Rotation.CLOCKWISE, rotationCount)        
-        # print("After rotation:")
-        # Tetromino.printPiece(tetromino)  # Print the state of the tetromino after rotation
-
-        # pygame.time.delay(2000)
-        # draw.refreshScreen(board, tetromino)
-
-        # self.moveFarLeft(board, tetromino)
-        # print("After moving left:")
-        # Tetromino.printPiece(tetromino)  # Print the state of the tetromino after moving left
-
-        # board.moveOrLockPiece(tetromino, Direction.RIGHT, xPos)
-        # print("After moving right or locking:")
-        # Tetromino.printPiece(tetromino)  # Print the state of the tetromino after moving right or locking
-
-        # board.dropPieceWithoutLock(tetromino)
-        # print("After dropping without locking:")
-        # Tetromino.printPiece(tetromino)  # Print the state of the tetromino after dropping without locking
-
-        # board.moveLeftAndLockPiece(tetromino, 2)
-        # print("After moving left and locking:")
-        # Tetromino.printPiece(tetromino)  # Print the state of the tetromino after moving left and locking
-
-        # draw.refreshScreen(board, tetromino)
-        # print("After screen refresh:")
-        # Tetromino.printPiece(tetromino)
-        
-        
