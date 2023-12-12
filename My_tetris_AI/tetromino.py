@@ -105,3 +105,17 @@ class Tetromino():
         print("Coordinates:")
         for coord in tetromino.blockCoords:
             print(f"({coord[0]}, {coord[1]})")
+
+    def generate_all_tetrominos(self):
+        all_tetriminos = []
+        all_shapes = list(Tetromino._allShapes.keys())
+        all_rotations = [0, 1, 2, 3]
+        all_colours = list(Tetromino._allColours.keys())
+
+        for shape in all_shapes:
+            for rotation in all_rotations:
+                for colour in all_colours:
+                    tetrimino = Tetromino(shape, rotation, colour)
+                    all_tetriminos.append(tetrimino)
+
+        return all_tetriminos

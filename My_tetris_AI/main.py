@@ -7,6 +7,7 @@ from direction import *
 from rotation import *
 print("\n\n++++ Welcome to Tejal's Tetris++++\n")
 
+
 #Bools that control game state
 isOpen = True
 newGame = True
@@ -88,7 +89,7 @@ while isOpen:
             
             locked = board.moveOrLockPiece(tetromino, Direction.DOWN)
             draw.refreshScreen(board, tetromino)
-            pygame.time.delay(300)
+            # ++++++THIS ONE pygame.time.delay(100)
             if (locked):
                 tetromino = board.newPieceOrGameOver(tetromino)
                 # print("post start newpieceorgameover")
@@ -112,7 +113,7 @@ while isOpen:
                         
             pcPlayer.makeMove(board, tetromino, position, draw)
             # print("next is newpiece or gameover")
-            pygame.time.delay(300)
+            # ++++++THIS ONE pygame.time.delay(300)
             tetromino = board.newPieceOrGameOver(tetromino)
             got_a_tetris=True
             # print("post newpiece gamover\n")

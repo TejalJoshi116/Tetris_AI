@@ -152,6 +152,8 @@ class Board:
                 tetromino.incrementCoords(0, 1)
             tetromino.incrementCoords(0, -1)
     
-    def moveLeftAndLockPiece(self, tetromino, count):
-        self.moveOrLockPiece(tetromino, Direction.LEFT, count)
+    def moveLeftAndLockPiece(self, tetromino, count):        
+        for _ in range(count):
+            if not self.moveOrLockPiece(tetromino, Direction.LEFT):
+                break
         self.dropAndLockPiece(tetromino)

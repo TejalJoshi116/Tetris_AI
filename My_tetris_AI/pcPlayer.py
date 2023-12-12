@@ -2,6 +2,7 @@ import copy
 from tetromino import *
 from board import *
 from direction import *
+# from tetromino import generate_all_tetrominos
 
 class PcPlayer:
 
@@ -27,46 +28,117 @@ class PcPlayer:
             tetromino.incrementCoords(-1)
         tetromino.incrementCoords(1)
     
+    def scoreBranches(self, copyBoard, Tet, depth, futureTetriminos):
+        if depth == 0:
+            return self.getPositionScore(copyBoard, Tet)
+
+        minScore = float('inf')
+
+        for nextTetrimino in futureTetriminos:
+            scores_for_position = []
+            print("2: Here")
+            for rotationCount in range(0, 4):
+                for xPos in range(copyBoard.width):
+                    copyTet = copy.deepcopy(Tet)  # Create a copy of Tetromino
+                    print("3: Here")
+                    copyBoard.rotatePiece(copyTet, Rotation.CLOCKWISE, rotationCount)
+                    self.moveFarLeft(copyBoard, copyTet)
+                    copyBoard.moveOrLockPiece(copyTet, Direction.RIGHT, xPos)
+                    copyBoard.dropPieceWithoutLock(copyTet)
+                    copyBoard.moveLeftAndLockPiece(copyTet, 2)
+                    print("4: Here")
+                    score = self.scoreBranches(copyBoard, nextTetrimino, depth - 1, futureTetriminos)
+                    scores_for_position.append(score)
+
+            # Find the minimum score for the current piece position and accumulate it
+            minScore = min(minScore, min(scores_for_position))
+            print("5: Here")
+
+        return minScore
+
     def scoreAllPositions(self, board, tetromino):
+        futureTetriminos = Tetromino.generate_all_tetrominos(self)
         board.holeCount = self.getHoleAndColumnCount(board.grid)[0]
         board.columnCount = self.getHoleAndColumnCount(board.grid)[1]
-        board.linesClearedThisMove = self.getHoleAndColumnCount(board.grid)[2]
+
         copyTet = copy.deepcopy(tetromino)
         copyBoard = copy.deepcopy(board)
+
         for rotationCount in range(0, 4):
             for xPos in range(board.width):
+                copyTet = copy.deepcopy(tetromino)  # Create a copy of Tetromino
                 copyBoard.rotatePiece(copyTet, Rotation.CLOCKWISE, rotationCount)
-                self.moveFarLeft(board, copyTet)
+                self.moveFarLeft(copyBoard, copyTet)
                 copyBoard.moveOrLockPiece(copyTet, Direction.RIGHT, xPos)
                 copyBoard.dropPieceWithoutLock(copyTet)
                 copyBoard.moveLeftAndLockPiece(copyTet, 2)
-                score = self.getPositionScore(board, copyTet)
-                # print("linecleared:",self.getLinesClearedScore(copyBoard))
-                self.positionScores[rotationCount][xPos] = copy.copy(score)
-                copyBoard = copy.deepcopy(board)
-                copyTet = copy.deepcopy(tetromino)
+
+                score = self.getPositionScore(copyBoard, copyTet)
+                depth = 1
+                print("1: Here")
+                B_score = self.scoreBranches(copyBoard, copyTet, depth, futureTetriminos)
+
+                self.positionScores[rotationCount][xPos] = copy.copy(score + B_score)
+
+    # def scoreBranches(self, board, tetromino, depth, futureTetriminos):
+    #     if depth == 0:
+    #         # return self.getPositionScore(board, tetromino)
+    #         return
+
+    #     board.holeCount = self.getHoleAndColumnCount(board.grid)[0]
+    #     board.columnCount = self.getHoleAndColumnCount(board.grid)[1]
+    #     board.linesClearedThisMove = self.getHoleAndColumnCount(board.grid)[2]
+    #     copyTet = copy.deepcopy(tetromino)
+    #     copyBoard = copy.deepcopy(board) 
+    #     minScore = float('inf')
         
+    #     for nextTetrimino in futureTetriminos:
+    #         scores_for_position = []  
+            
+    #         for rotationCount in range(0, 4):
+    #             for xPos in range(board.width):
+    #                 copyBoard.rotatePiece(copyTet, Rotation.CLOCKWISE, rotationCount)
+    #                 self.moveFarLeft(board, copyTet)
+    #                 copyBoard.moveOrLockPiece(copyTet, Direction.RIGHT, xPos)
+    #                 copyBoard.dropPieceWithoutLock(copyTet)
+    #                 copyBoard.moveLeftAndLockPiece(copyTet, 2)
+
+    #                 # Recursive call to get the minimum score for the next Tetrimino
+    #                 score = self.scoreAllPositions(copyBoard, nextTetrimino, depth - 1, futureTetriminos[1:])
+    #                 scores_for_position.append(score) 
+
+    #                 # Update self.positionScores for the current position
+    #                 self.positionScores[rotationCount][xPos] = copy.copy(score)
+
+    #                 copyBoard = copy.deepcopy(board)
+    #                 copyTet = copy.deepcopy(tetromino)
+
+    #         # Find the minimum score for the current piece position and accumulate it
+    #         minScore = min(minScore, min(scores_for_position))
+
     def choosePieceAndPosition(self, board, tetromino):
+        # futureTetriminos = Tetromino.generate_all_tetrominos(self)
         swapPiece = False
-        
+        # depth = 1
+        # min = self.scoreAllPositions(board, tetromino, depth, futureTetriminos)
         self.scoreAllPositions(board, tetromino)
         tetMin = self.getMinScoreAndPosition()
         self.clearPositionScores(board)
         
-        heldPiece = copy.deepcopy(board.heldPiece)
-        board.centrePiece(heldPiece)
-        heldPiece.incrementCoords(tetromino.xOffset, tetromino.yOffset)
-        self.scoreAllPositions(board, heldPiece)
-        heldPieceMin = self.getMinScoreAndPosition()
-        self.clearPositionScores(board)
-        # position = (tetMin[1], tetMin[2])
-        #Compare
-        if (heldPieceMin[0] < tetMin[0]):
-            position = (heldPieceMin[1], heldPieceMin[2])
-            swapPiece = True
-        else:
-            position = (tetMin[1], tetMin[2])
-        # print("++++++++++++++++++++++++++++++++ CHOSEN ++++++++++++++++++++++++++++++++++++++++++++")    
+        
+        # heldPiece = copy.deepcopy(board.heldPiece)
+        # board.centrePiece(heldPiece)
+        # heldPiece.incrementCoords(tetromino.xOffset, tetromino.yOffset)
+        # self.scoreAllPositions(board, heldPiece)
+        # heldPieceMin = self.getMinScoreAndPosition()
+        # self.clearPositionScores(board)
+        # #Compare
+        # if (heldPieceMin[0] < tetMin[0]):
+        #     position = (heldPieceMin[1], heldPieceMin[2])
+        #     swapPiece = True
+        # else:
+        position = (tetMin[1], tetMin[2])
+        
         return (swapPiece, position)
 
         # position = (tetMin[1], tetMin[2])
@@ -93,10 +165,7 @@ class PcPlayer:
 
         tempBoard = copy.deepcopy(board)
         tempBoard.lockPieceOnGrid(tetromino)
-        #+++++Hereeeeee++++++++
-        
-
-        #positionScore = holeScore + heightScore + columnScore + linesClearedScore
+       
         positionScore = holeScore + heightScore + columnScore + rowfillScore
         # print("pos_score: ",positionScore," | HoleScore: ",holeScore," | height_score: ",heightScore," |rowfill_score: ",rowfillScore)
         return positionScore
