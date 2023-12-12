@@ -71,8 +71,8 @@ class Board:
             return False
 
     def moveOrLockPiece(self, tetromino, direction, count = 1):
-        x = direction.value[0]
-        y = direction.value[1]
+        x = direction.value[0]#-1
+        y = direction.value[1]#0
         for i in range(count):
             tetromino.incrementCoords(x, y)
             if (self.isOutOfBounds(tetromino) or self.isGridBlocked(tetromino)):
