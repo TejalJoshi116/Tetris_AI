@@ -27,38 +27,7 @@ class PcPlayer:
         while not (board.isOutOfBounds(tetromino) or board.isGridBlocked(tetromino)):
             tetromino.incrementCoords(-1)
         tetromino.incrementCoords(1)
-    
-    # def scoreBranches(self, copyBoard, Tet, depth, futureTetriminos):        
-    #     if depth == 0:
-    #         print("0.5: Here")
-    #         return self.getPositionScore(copyBoard, Tet)
-        
-    #     minScore = float('inf')
-    #     for nextTetromino in futureTetriminos:
-    #         scores_for_position = []
-    #         print("2: Here")
-    #         rotationCount=nextTetromino.rotations  
 
-    #         for xPos in range(copyBoard.width):
-    #             copyTet = copy.deepcopy(Tet) 
-    #             print("3: Here")
-    #             copyBoard.rotatePiece(copyTet, Rotation.CLOCKWISE, rotationCount)
-    #             self.moveFarLeft(copyBoard, copyTet)
-    #             copyBoard.moveOrLockPiece(copyTet, Direction.RIGHT, xPos)
-    #             copyBoard.dropPieceWithoutLock(copyTet)
-    #             copyBoard.moveLeftAndLockPiece(copyTet, 2)
-    #             print("4: Here")
-    #             score = self.scoreBranches(copyBoard, nextTetromino, depth - 1, futureTetriminos)
-    #             scores_for_position.append(score)
-    #             copyBoard = copy.deepcopy(copyBoard)
-    #             copyTet = copy.deepcopy(copyTet)
-
-
-    #         # Find the minimum score for the current piece position and accumulate it
-    #         minScore = min(minScore, min(scores_for_position))
-    #         print("5: Here")
-
-    #     return minScore
 
     def scoreBranches(self, board, tetromino, depth, futureTetriminos):
         if depth == 0:
